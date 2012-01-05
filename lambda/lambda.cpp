@@ -2,6 +2,7 @@
 #include <sstream>
 #include <iostream>
 #include <algorithm>
+#include <functional>
 
 void save(const std::vector<int> to_save, std::ostream& stream)
 {
@@ -14,6 +15,21 @@ void save(const std::vector<int> to_save, std::ostream& stream)
 void save_with_lambda(const std::vector<int> to_save, std::ostream& stream)
 {
 	std::for_each(to_save.begin(), to_save.end(), [&stream](int value) { stream << value; });
+}
+
+template<typename T>
+std::vector<T> filter(const std::vector<T> input, std::function<bool (const T&)> predicate)
+{
+	std::vector<T> output;
+	std::for_each(input.cbegin(), input.cend(), [&output, predicate](T value) { if (predicate(value)) output.push_back(value); });
+	return output;
+}
+
+template <typename T>
+void print_vector(const std::vector<T>& to_print)
+{
+	std::for_each(to_print.begin(), to_print.end(), [](T value) { std::cout << value << " "; });
+	std::cout << std::endl;
 }
 
 void main()
@@ -48,4 +64,10 @@ void main()
 	auto summer = [&total](int number) { total += number; };
 	std::for_each(numbers.begin(), numbers.end(), summer);
 	std::cout << total << std::endl;
+
+	// Get all even numbers
+	print_vector(filter<int>(numbers, [](int n) { return n % 2 == 0 ? true : false; } ));
+
+	// Get all odd numbers
+	print_vector(filter<int>(numbers, [](int n) { return n % 2 == 0 ? false : true; } ));
 }
